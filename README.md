@@ -1,1 +1,1 @@
-# DungHT39-Smart-API-Hub
+# DungHT39-HN26-FR-ReactJS-01-Smart-API-Hub-Assignment

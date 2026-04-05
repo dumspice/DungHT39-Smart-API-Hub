@@ -1,0 +1,30 @@
+{
+  "tables": {
+    "users": {
+      "email": "string",
+      "password": "string",
+      "role": "string"
+    },
+    "posts": {
+      "title": "string",
+      "content": "string",
+      "userId": "number"
+    },
+    "comments": {
+      "content": "string",
+      "postId": "number"
+    },
+    "rating": {
+      "userId": "number",
+      "score": "number"
+    },
+    "blog": {
+      "title": "string",
+      "content": "string",
+      "userId": "number"
+    },
+    "category": {
+      "name": "string"
+    }
+  }
+}
