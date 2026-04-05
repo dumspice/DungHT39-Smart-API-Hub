@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { generatePrismaSchema } from "./utils/schema-generator";
 import { checkDatabaseConnection, prisma } from "./config/prisma";
 import crudRouter from "./routes/dynamic-crud.router";
+import authRouter from "./routes/auth.router";
 
 dotenv.config();
 
@@ -24,21 +25,22 @@ app.get("/health", async (req, res) => {
   res.status(dbConnected ? 200 : 503).json({
     status: dbConnected ? "UP" : "DOWN",
     database: dbConnected ? "Connected" : "Disconnected",
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 });
 
 // Dynamic CRUD endpoints
 app.use("/", crudRouter);
+app.use("/", authRouter);
 
 const startServer = async () => {
-    try {
-        app.listen(PORT, () => {
-            console.log(`Server is running on http://localhost:${PORT}`);
-        });
-    } catch (error) {
-        console.error("Failed to start server:", error);
-    }
+  try {
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+  }
 };
 
 startServer();

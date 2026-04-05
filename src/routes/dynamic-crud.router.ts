@@ -3,13 +3,9 @@ import fs from "fs";
 import path from "path";
 import * as controller from "../controllers/dynamic-crud.controller";
 
-import { authMiddleware, login, register } from "../middlewares/auth.middleware";
+import { authMiddleware } from "../middlewares/auth.middleware";
 
 const router = Router();
-
-// Auth routes
-router.post("/register", register);
-router.post("/login", login);
 
 // Load allowed resources from schema.json
 const schemaPath = path.join(process.cwd(), "schema.json");
