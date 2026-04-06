@@ -30,8 +30,8 @@ app.get("/health", async (req, res) => {
 });
 
 // Dynamic CRUD endpoints
+app.use("/auth", authRouter);
 app.use("/", crudRouter);
-app.use("/", authRouter);
 
 const startServer = async () => {
   try {

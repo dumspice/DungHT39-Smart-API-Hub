@@ -1,7 +1,7 @@
 {
   "tables": {
     "users": {
-      "email": "string",
+      "email": { "type": "string", "unique": true },
       "password": "string",
       "role": "string"
     },

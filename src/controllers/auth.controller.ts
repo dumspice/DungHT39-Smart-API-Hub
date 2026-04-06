@@ -33,6 +33,14 @@ export const login = async (req: Request, res: Response) => {
 export const register = async (req: Request, res: Response) => {
   const { email, password, role } = req.body;
   try {
+    const isExist = await (prisma as any).users.findFirst({
+      where: { email },
+    });
+
+    if (isExist) {
+      return res.status(400).json({ message: "User is already exist" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await (prisma as any).users.create({
       data: { email, password: hashedPassword, role: role || "user" },

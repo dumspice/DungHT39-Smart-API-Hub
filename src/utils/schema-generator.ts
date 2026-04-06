@@ -4,6 +4,7 @@ import path from "path";
 interface TableField {
   type: string;
   relation?: boolean;
+  unique?: boolean;
 }
 
 interface TableSchema {
@@ -47,15 +48,18 @@ datasource db {
     const relations: string[] = [];
 
     for (const [fieldName, fieldType] of Object.entries(fields)) {
+      const isObject = typeof fieldType !== "string";
       const typeStr =
         typeof fieldType === "string" ? fieldType : fieldType.type;
       const prismaType = mapTypeToPrisma(typeStr);
+
+      const isUnique = isObject && fieldType.unique;
 
       if (fieldName.endsWith("Id")) {
         const relationModel = fieldName.slice(0, -2); // e.g. userId -> user
         const relationTable = findTableCaseInsensitive(tables, relationModel);
         if (relationTable) {
-          prismaSchema += `  ${fieldName} ${prismaType}\n`;
+          prismaSchema += `  ${fieldName} ${prismaType}${isUnique ? " @unique" : ""}\n`;
           prismaSchema += `  ${relationModel} ${capitalize(relationTable)} @relation(fields: [${fieldName}], references: [id])\n`;
           relations.push(relationTable);
           continue;
