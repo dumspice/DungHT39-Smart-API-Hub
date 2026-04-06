@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: Tiendung11@
       POSTGRES_DB: smart_api_hub
     ports:
-      - "5433:5432"
+      - "5432:5432"
 
   app:
     build: .
