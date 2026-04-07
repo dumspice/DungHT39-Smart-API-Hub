@@ -5,6 +5,7 @@ import * as controller from "../controllers/dynamic-crud.controller";
 
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { validateRequest } from "../middlewares/validateRequest.middleware";
+import { AppError } from "../utils/AppError";
 
 const router = Router();
 
@@ -17,7 +18,7 @@ const allowedResources = Object.keys(schemaJson.tables);
 router.use("/:resource", (req, res, next) => {
   const { resource } = req.params;
   if (!allowedResources.includes(resource)) {
-    return res.status(404).json({ error: `Resource '${resource}' not found.` });
+    return next(new AppError(`Resource ${resource} not found`, 404));
   }
   next();
 });

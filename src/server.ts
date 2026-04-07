@@ -5,6 +5,8 @@ import { generatePrismaSchema } from "./utils/schema-generator";
 import { checkDatabaseConnection, prisma } from "./config/prisma";
 import crudRouter from "./routes/dynamic-crud.router";
 import authRouter from "./routes/auth.router";
+import { globalHandleError } from "./middlewares/globalHandleError.middleware";
+import { AppError } from "./utils/AppError";
 
 dotenv.config();
 
@@ -32,6 +34,12 @@ app.get("/health", async (req, res) => {
 // Dynamic CRUD endpoints
 app.use("/auth", authRouter);
 app.use("/", crudRouter);
+
+app.use((req, res, next) => {
+  next(new AppError(`Path ${req.originalUrl} does not exists`, 404));
+});
+
+app.use(globalHandleError);
 
 const startServer = async () => {
   try {
