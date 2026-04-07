@@ -11,9 +11,23 @@ export const getResources = asyncHandler(
     const queryData: any = buildPrismaQuery(resource, req.query);
 
     const { prismaModelName, findArgs, countArgs } = queryData;
+
+    // Get fields
     const select = parseSelectField(req.query._fields);
 
     const model = (prisma as any)[prismaModelName];
+
+    let finalFindArgs = { ...findArgs };
+
+    if (select) {
+      // If select fields exists, assign relations into select
+      if (finalFindArgs.include) {
+        finalFindArgs.select = { ...select, ...finalFindArgs.include };
+        delete finalFindArgs.include;
+      } else {
+        finalFindArgs.select = select;
+      }
+    }
 
     const [data, totalCount] = await Promise.all([
       model.findMany({ ...findArgs, select }),

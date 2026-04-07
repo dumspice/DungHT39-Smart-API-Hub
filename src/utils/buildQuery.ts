@@ -1,4 +1,5 @@
 import schema from "../../schema.json";
+import { RELATION_CONFIG } from "./relationConfig";
 
 export const buildPrismaQuery = (resource: string, query: any) => {
   // 1. Find table (in schema.json key are lowercase like "users")
@@ -8,7 +9,17 @@ export const buildPrismaQuery = (resource: string, query: any) => {
   // 2. Convert resource name to PascalCase for Prisma (example: users -> Users)
   const prismaModelName = resource.charAt(0).toUpperCase() + resource.slice(1);
 
-  const { _page, _limit, _sort, _order, q, _fields, ...filters } = query;
+  const {
+    _page,
+    _limit,
+    _sort,
+    _order,
+    q,
+    _fields,
+    _expand,
+    _embed,
+    ...filters
+  } = query;
 
   // 3. Pagination
   const limit = parseInt(_limit as string) || 10;
@@ -59,9 +70,29 @@ export const buildPrismaQuery = (resource: string, query: any) => {
     }
   });
 
+  // _expand / _embed
+  const include: any = {};
+  const config = RELATION_CONFIG[prismaModelName];
+
+  if (config) {
+    //Only allow expansion if it is in the Parent list.
+    if (_expand && config.expand.includes(_expand)) {
+      include[_expand] = true;
+    }
+    // Only allow expansion if it is in the Children list.
+    if (_embed && config.embed.includes(_embed)) {
+      include[_embed] = true;
+    }
+  }
+
   return {
     prismaModelName,
-    findArgs: { where, orderBy, ...pagination },
+    findArgs: {
+      where,
+      orderBy,
+      ...pagination,
+      ...(Object.keys(include).length > 0 ? { include } : {}),
+    },
     countArgs: { where },
   };
 };
