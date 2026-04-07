@@ -23,29 +23,217 @@ router.use("/:resource", (req, res, next) => {
   next();
 });
 
-// GET is public (as per requirements for simplified platform)
+/**
+ * @swagger
+ * tags:
+ *   name: CRUD
+ *   description: Dynamic CRUD operations for schema-defined resources
+ */
+
+/**
+ * @swagger
+ * /{resource}:
+ *   get:
+ *     summary: Get all items of a resource
+ *     tags: [CRUD]
+ *     parameters:
+ *       - in: path
+ *         name: resource
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The name of the resource (e.g., users, posts)
+ *       - in: query
+ *         name: _page
+ *         schema:
+ *           type: integer
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: _limit
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page
+ *       - in: query
+ *         name: _sort
+ *         schema:
+ *           type: string
+ *         description: Field to sort by
+ *       - in: query
+ *         name: _order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *         description: Sort order
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *         description: Search query for full-text search
+ *     responses:
+ *       200:
+ *         description: A list of items
+ *       404:
+ *         description: Resource not found
+ */
 router.get("/:resource", controller.getResources);
+
+/**
+ * @swagger
+ * /{resource}/{id}:
+ *   get:
+ *     summary: Get a single item by ID
+ *     tags: [CRUD]
+ *     parameters:
+ *       - in: path
+ *         name: resource
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The item details
+ *       404:
+ *         description: Item not found
+ */
 router.get("/:resource/:id", controller.getResourceById);
 
-// POST, PUT, PATCH, DELETE are protected
+/**
+ * @swagger
+ * /{resource}:
+ *   post:
+ *     summary: Create a new item
+ *     tags: [CRUD]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: resource
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       201:
+ *         description: Created successfully
+ *       401:
+ *         description: Unauthorized
+ */
 router.post(
   "/:resource",
   authMiddleware,
   validateRequest(),
   controller.createResource,
 );
+
+/**
+ * @swagger
+ * /{resource}/{id}:
+ *   put:
+ *     summary: Update an item (Full update)
+ *     tags: [CRUD]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: resource
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Updated successfully
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Item not found
+ */
 router.put(
   "/:resource/:id",
   authMiddleware,
   validateRequest(),
   controller.updateResource,
 );
+
+/**
+ * @swagger
+ * /{resource}/{id}:
+ *   patch:
+ *     summary: Update an item (Partial update)
+ *     tags: [CRUD]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: resource
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Updated successfully
+ */
 router.patch(
   "/:resource/:id",
   authMiddleware,
   validateRequest(),
   controller.updateResource,
 );
+
+/**
+ * @swagger
+ * /{resource}/{id}:
+ *   delete:
+ *     summary: Delete an item
+ *     tags: [CRUD]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: resource
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Deleted successfully
+ */
 router.delete(
   "/:resource/:id",
   authMiddleware,
