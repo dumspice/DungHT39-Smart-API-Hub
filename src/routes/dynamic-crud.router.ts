@@ -4,6 +4,7 @@ import path from "path";
 import * as controller from "../controllers/dynamic-crud.controller";
 
 import { authMiddleware } from "../middlewares/auth.middleware";
+import { validateRequest } from "../middlewares/validateRequest.middleware";
 
 const router = Router();
 
@@ -23,11 +24,32 @@ router.use("/:resource", (req, res, next) => {
 
 // GET is public (as per requirements for simplified platform)
 router.get("/:resource", controller.getResources);
+router.get("/:resource/:id", controller.getResourceById);
 
 // POST, PUT, PATCH, DELETE are protected
-router.post("/:resource", authMiddleware, controller.createResource);
-router.put("/:resource/:id", authMiddleware, controller.updateResource);
-router.patch("/:resource/:id", authMiddleware, controller.updateResource);
-router.delete("/:resource/:id", authMiddleware, controller.deleteResource);
+router.post(
+  "/:resource",
+  authMiddleware,
+  validateRequest(),
+  controller.createResource,
+);
+router.put(
+  "/:resource/:id",
+  authMiddleware,
+  validateRequest(),
+  controller.updateResource,
+);
+router.patch(
+  "/:resource/:id",
+  authMiddleware,
+  validateRequest(),
+  controller.updateResource,
+);
+router.delete(
+  "/:resource/:id",
+  authMiddleware,
+  validateRequest(),
+  controller.deleteResource,
+);
 
 export default router;

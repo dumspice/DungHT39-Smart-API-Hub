@@ -1,21 +1,33 @@
 import { Request, Response } from "express";
 import { prisma } from "../config/prisma";
+import { parseSelectField } from "../utils/parseSelectFields";
+import { parseId } from "../utils/parseId";
 
 export const getResources = async (req: Request, res: Response) => {
   const resource = req.params.resource as string;
-  const { _fields } = req.query;
+  const select = parseSelectField(req.query._fields);
 
   try {
-    const selectFields = _fields
-      ? (_fields as string).split(",").reduce((acc: any, field: string) => {
-          acc[field.trim()] = true;
-          return acc;
-        }, {})
-      : undefined;
-
     // Use Prisma's dynamic model access
     const data = await (prisma as any)[resource].findMany({
-      select: selectFields,
+      select,
+    });
+
+    res.json(data);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getResourceById = async (req: Request, res: Response) => {
+  const resource = req.params.resource as string;
+  const id = req.params.id as string;
+  const select = parseSelectField(req.query._fields);
+
+  try {
+    const data = await (prisma as any)[resource].findUnique({
+      where: { id: parseId(id) },
+      data: select,
     });
 
     res.json(data);
@@ -40,12 +52,12 @@ export const createResource = async (req: Request, res: Response) => {
 
 export const updateResource = async (req: Request, res: Response) => {
   const resource = req.params.resource as string;
-  const id = req.params.id;
+  const id = req.params.id as string;
   const body = req.body;
 
   try {
     const data = await (prisma as any)[resource].update({
-      where: { id: parseInt(id as string) },
+      where: { id: parseId(id) },
       data: body,
     });
     res.json(data);
@@ -56,11 +68,11 @@ export const updateResource = async (req: Request, res: Response) => {
 
 export const deleteResource = async (req: Request, res: Response) => {
   const resource = req.params.resource as string;
-  const id = req.params.id;
+  const id = req.params.id as string;
 
   try {
     await (prisma as any)[resource].delete({
-      where: { id: parseInt(id as string) },
+      where: { id: parseId(id) },
     });
     res.status(204).send();
   } catch (error: any) {

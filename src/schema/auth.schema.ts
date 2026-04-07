@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v3";
 
 export const registerSchema = z.object({
   email: z.string().refine((val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
@@ -14,3 +14,14 @@ export const loginSchema = z.object({
   }),
   password: z.string().min(1, "Password cannot empty"),
 });
+
+export const formatZodError = (error: any) => {
+  const formatted = error.format();
+  const result: Record<string, string> = {};
+  for (const key in formatted) {
+    if (key !== "_errors") {
+      result[key] = formatted[key]?._errors?.[0];
+    }
+  }
+  return result;
+};

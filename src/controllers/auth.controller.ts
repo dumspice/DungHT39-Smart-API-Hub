@@ -1,22 +1,14 @@
 import { Request, Response } from "express";
 import { prisma } from "../config/prisma";
-import { registerSchema, loginSchema } from "../schema/auth.schema";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
 
 export const login = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
   try {
-    const parsed = loginSchema.safeParse(req.body);
-
-    if (!parsed.success) {
-      return res.status(400).json({
-        error: formatZodError(parsed.error),
-      });
-    }
-
-    const { email, password } = parsed.data;
     // Dynamic access to 'users' table
     const user = await (prisma as any).users.findFirst({
       where: { email },
@@ -40,17 +32,8 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const register = async (req: Request, res: Response) => {
+  const { email, password, role } = req.body;
   try {
-    const parsed = registerSchema.safeParse(req.body);
-
-    if (!parsed.success) {
-      return res.status(400).json({
-        error: formatZodError(parsed.error),
-      });
-    }
-
-    const { email, password, role } = parsed.data;
-
     const isExist = await (prisma as any).users.findFirst({
       where: { email },
     });
@@ -67,18 +50,4 @@ export const register = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(400).json({ error: error.message });
   }
-};
-
-const formatZodError = (error: any) => {
-  const formatted = error.format();
-
-  const result: Record<string, string> = {};
-
-  for (const key in formatted) {
-    if (key !== "_errors") {
-      result[key] = formatted[key]?._errors?.[0];
-    }
-  }
-
-  return result;
 };
