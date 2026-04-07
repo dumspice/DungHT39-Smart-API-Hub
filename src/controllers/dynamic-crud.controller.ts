@@ -2,16 +2,25 @@ import { Request, Response } from "express";
 import { prisma } from "../config/prisma";
 import { parseSelectField } from "../utils/parseSelectFields";
 import { parseId } from "../utils/parseId";
+import { buildPrismaQuery } from "../utils/buildQuery";
 
 export const getResources = async (req: Request, res: Response) => {
   const resource = req.params.resource as string;
+  const queryData: any = buildPrismaQuery(resource, req.query);
+
+  const { prismaModelName, findArgs, countArgs } = queryData;
   const select = parseSelectField(req.query._fields);
 
   try {
-    // Use Prisma's dynamic model access
-    const data = await (prisma as any)[resource].findMany({
-      select,
-    });
+    const model = (prisma as any)[prismaModelName];
+
+    const [data, totalCount] = await Promise.all([
+      model.findMany({ ...findArgs, select }),
+      model.count(countArgs),
+    ]);
+
+    res.setHeader("X-Total-Count", totalCount);
+    res.setHeader("Access-Control-Expose-Headers", "X-Total-Count");
 
     res.json(data);
   } catch (error: any) {
