@@ -16,6 +16,7 @@ model Users {
   updatedAt  DateTime @updatedAt
   @@map("users")
   posts Posts[]
+  comments Comments[]
   rating Rating[]
   blog Blog[]
 }
@@ -37,6 +38,8 @@ model Comments {
   content String
   postId Int
   post Posts @relation(fields: [postId], references: [id])
+  userId Int
+  user Users @relation(fields: [userId], references: [id])
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   @@map("comments")

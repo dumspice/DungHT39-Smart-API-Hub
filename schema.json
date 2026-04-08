@@ -12,7 +12,8 @@
     },
     "comments": {
       "content": "string",
-      "postId": "number"
+      "postId": "number",
+      "userId": "number"
     },
     "rating": {
       "userId": "number",

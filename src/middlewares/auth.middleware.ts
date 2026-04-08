@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { UserPayload } from "../types/express";
 
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
 
@@ -8,12 +9,18 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Unauthorized" });
+  const method = req.method;
+
+  if (method === "GET") {
+    return next();
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized: No token provided" });
+  }
+
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     (req as any).user = decoded;
@@ -22,3 +29,15 @@ export const authMiddleware = (
     res.status(401).json({ error: "Invalid token" });
   }
 };
+
+export const checkRole = (role: string) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const user = (req as any).user;
+    if (!user || user.role !== role) {
+      return res.status(403).json({ error: "Forbidden: Access denied" });
+    }
+    next();
+  };
+};
+
+export const isAdmin = checkRole("admin");

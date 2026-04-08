@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import * as controller from "../controllers/dynamic-crud.controller";
 
-import { authMiddleware } from "../middlewares/auth.middleware";
+import { authMiddleware, isAdmin } from "../middlewares/auth.middleware";
 import { validateRequest } from "../middlewares/validateRequest.middleware";
 import { AppError } from "../utils/AppError";
 
@@ -247,6 +247,7 @@ router.patch(
 router.delete(
   "/:resource/:id",
   authMiddleware,
+  isAdmin,
   validateRequest(),
   controller.deleteResource,
 );

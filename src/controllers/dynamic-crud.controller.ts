@@ -60,6 +60,21 @@ export const createResource = asyncHandler(
   async (req: Request, res: Response) => {
     const resource = req.params.resource as string;
     const body = req.body;
+    const user = (req as any).user;
+
+    // Ownership Enforcement:
+    // If resource is not 'users' and has a 'userId' field in body (or schema)
+    // and user is not admin, force userId to be the authenticated user's id.
+    if (user && user.role !== "admin") {
+      // Check if schema defines userId for this resource
+      const schemaPath = require("path").join(process.cwd(), "schema.json");
+      const schema = require("fs").readFileSync(schemaPath, "utf-8");
+      const tableSchema = JSON.parse(schema).tables[resource];
+
+      if (tableSchema && tableSchema.userId) {
+        body.userId = user.id;
+      }
+    }
 
     const data = await (prisma as any)[resource].create({
       data: body,
@@ -73,9 +88,24 @@ export const updateResource = asyncHandler(
     const resource = req.params.resource as string;
     const id = req.params.id as string;
     const body = req.body;
+    const user = (req as any).user;
+
+    const where: any = { id: parseId(id) };
+
+    // Ownership Enforcement:
+    // Non-admins can only update their own records if the resource has a userId field.
+    if (user && user.role !== "admin") {
+      const schemaPath = require("path").join(process.cwd(), "schema.json");
+      const schema = require("fs").readFileSync(schemaPath, "utf-8");
+      const tableSchema = JSON.parse(schema).tables[resource];
+
+      if (tableSchema && tableSchema.userId) {
+        where.userId = user.id;
+      }
+    }
 
     const data = await (prisma as any)[resource].update({
-      where: { id: parseId(id) },
+      where,
       data: body,
     });
     res.json(data);
