@@ -3,12 +3,14 @@ import { checkDatabaseConnection } from "./config/prisma";
 import { globalHandleError } from "./middlewares/globalHandleError.middleware";
 import { AppError } from "./utils/AppError";
 import { swaggerSpec } from "./config/swagger";
+import { logger } from "./utils/logger";
 import swaggerUi from "swagger-ui-express";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import crudRouter from "./routes/dynamic-crud.router";
 import authRouter from "./routes/auth.router";
+import { requestLogger } from "./middlewares/requestLogger.middleware";
 
 dotenv.config();
 
@@ -19,6 +21,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(requestLogger);
 
 // Step 1: Generate schema and synchronize database
 // For a production-ready app, this would be a separate command or check.
@@ -48,10 +51,10 @@ app.use(globalHandleError);
 const startServer = async () => {
   try {
     app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}`);
+      logger.info(`Server is running on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error("Failed to start server:", error);
+    logger.error("Failed to start server:", { error });
   }
 };
 

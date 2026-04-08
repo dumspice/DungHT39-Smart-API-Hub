@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Prisma } from "@prisma/client";
+import { logger } from "../utils/logger";
 
 export const globalHandleError = (
   err: any,
@@ -29,7 +30,13 @@ export const globalHandleError = (
     }
   }
 
-  console.error(`[ERROR] ${req.method} ${req.path}: `, err);
+  logger.error("API Error", {
+    method: req.method,
+    url: req.originalUrl,
+    status,
+    message,
+    stack: err.stack,
+  });
 
   res.status(status).json({
     error: message,

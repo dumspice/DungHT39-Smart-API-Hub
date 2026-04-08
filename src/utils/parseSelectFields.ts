@@ -6,7 +6,7 @@ export const parseSelectField = (fieldsQuery: any) => {
   const selectObj = fieldsQuery
     .split(",")
     .map((f) => f.trim())
-    .filter((f) => f.length > 0) // Loại bỏ chuỗi rỗng
+    .filter((f) => f.length > 0) // Remove empty string
     .reduce((acc: any, field: string) => {
       acc[field] = true;
       return acc;

@@ -69,6 +69,16 @@ router.use("/:resource", (req, res, next) => {
  *         schema:
  *           type: string
  *         description: Search query for full-text search
+ *       - in: query
+ *         name: _expand
+ *         schema:
+ *           type: string
+ *         description: Query for expand data of parent
+ *       - in: query
+ *         name: _embed
+ *         schema:
+ *           type: string
+ *         description: Query for expand data of children
  *     responses:
  *       200:
  *         description: A list of items
