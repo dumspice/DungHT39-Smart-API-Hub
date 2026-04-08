@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { prisma } from "../config/prisma";
+import { asyncHandler } from "../utils/asyncHandler";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { asyncHandler } from "../utils/asyncHandler";
 
 const JWT_SECRET = process.env.JWT_SECRET || "super-secret-key";
 

@@ -1,5 +1,5 @@
-import schema from "../../schema.json";
 import { RELATION_CONFIG } from "./relationConfig";
+import schema from "../../schema.json";
 
 export const buildPrismaQuery = (resource: string, query: any) => {
   // 1. Find table (in schema.json key are lowercase like "users")

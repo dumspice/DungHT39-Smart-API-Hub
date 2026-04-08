@@ -4,24 +4,29 @@ import { globalHandleError } from "./middlewares/globalHandleError.middleware";
 import { AppError } from "./utils/AppError";
 import { swaggerSpec } from "./config/swagger";
 import { logger } from "./utils/logger";
+import { requestLogger } from "./middlewares/requestLogger.middleware";
+import { rateLimiter } from "./middlewares/rateLimiter.middleware";
 import swaggerUi from "swagger-ui-express";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import crudRouter from "./routes/dynamic-crud.router";
 import authRouter from "./routes/auth.router";
-import { requestLogger } from "./middlewares/requestLogger.middleware";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.set("trust proxy", true);
+
 app.use(cors());
 app.use(express.json());
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(requestLogger);
+app.use(rateLimiter);
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Step 1: Generate schema and synchronize database
 // For a production-ready app, this would be a separate command or check.

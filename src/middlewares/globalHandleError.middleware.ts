@@ -8,8 +8,8 @@ export const globalHandleError = (
   res: Response,
   next: NextFunction,
 ) => {
-  let status = err.statusCode || 500;
-  let message = err.message || "Internal Server Error";
+  let status: number = err.statusCode || 500;
+  let message: string = err.message || "Internal Server Error";
 
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     switch (err.code) {
