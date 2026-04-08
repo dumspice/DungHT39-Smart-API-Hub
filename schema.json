@@ -14,18 +14,6 @@
       "content": "string",
       "postId": "number",
       "userId": "number"
-    },
-    "rating": {
-      "userId": "number",
-      "score": "number"
-    },
-    "blog": {
-      "title": "string",
-      "content": "string",
-      "userId": "number"
-    },
-    "category": {
-      "name": "string"
     }
   }
 }

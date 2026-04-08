@@ -5,7 +5,9 @@
   "main": "src/server.ts",
   "scripts": {
     "dev": "nodemon --watch src --exec ts-node src/server.ts",
-    "generate": "ts-node src/utils/schemaLoader.ts",
+    "generate": "ts-node src/utils/schema-generator.ts",
+    "build": "npm run generate && npx prisma generate && tsc",
+    "start": "node dist/server.js",
     "start:full": "npm run generate && npx prisma generate && npx prisma db push && npm run dev",
     "debug": "node --inspect-brk -r ts-node/register src/server.ts"
   },

@@ -17,8 +17,6 @@ model Users {
   @@map("users")
   posts Posts[]
   comments Comments[]
-  rating Rating[]
-  blog Blog[]
 }
 
 model Posts {
@@ -43,33 +41,4 @@ model Comments {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   @@map("comments")
-}
-
-model Rating {
-  id         Int      @id @default(autoincrement())
-  userId Int
-  user Users @relation(fields: [userId], references: [id])
-  score Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  @@map("rating")
-}
-
-model Blog {
-  id         Int      @id @default(autoincrement())
-  title String
-  content String
-  userId Int
-  user Users @relation(fields: [userId], references: [id])
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  @@map("blog")
-}
-
-model Category {
-  id         Int      @id @default(autoincrement())
-  name String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  @@map("category")
 }
