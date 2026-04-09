@@ -16,7 +16,11 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://postgres:Tiendung11%40@db:5432/smart_api_hub
+      - DB_USER=postgres
+      - DB_PASSWORD=Tiendung11@
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=smart_api_hub
       - PORT=3000
     volumes:
       - .:/app
